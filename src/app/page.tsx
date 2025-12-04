@@ -24,10 +24,10 @@ export default function Home() {
             {/* Menu Items - Desktop */}
             {!isMobile && (
               <div className="flex items-center gap-12 flex-1 justify-center ml-8">
-                <a href="#" className="text-white hover:text-cyan-400 transition">HOME</a>
-                <a href="#" className="text-white hover:text-cyan-400 transition">FEATURE</a>
-                <a href="#" className="text-white hover:text-cyan-400 transition">HOW IT WORK</a>
-                <a href="#" className="text-white hover:text-cyan-400 transition">ANALYS</a>
+                <a href="#home" className="text-white hover:text-cyan-400 transition">HOME</a>
+                <a href="#feature" className="text-white hover:text-cyan-400 transition">FEATURE</a>
+                <a href="#work" className="text-white hover:text-cyan-400 transition">HOW IT WORK</a>
+                <a href="/login" className="text-white hover:text-cyan-400 transition">ANALYZE</a>
               </div>
             )}
 
@@ -45,7 +45,7 @@ export default function Home() {
               {/* Login */}
               <div className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
                 <User size={24} />
-                {!isMobile && <span>Login</span>}
+                {!isMobile && <a href="/login">Login</a>}
               </div>
             </div>
           </div>
@@ -53,11 +53,11 @@ export default function Home() {
           {/* Mobile Menu Dropdown */}
           {isMobile && isMenuOpen && (
             <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-gray-700">
-              <a href="#" className="text-white hover:text-cyan-400 transition">HOME</a>
-              <a href="#" className="text-white hover:text-cyan-400 transition">FEATURE</a>
-              <a href="#" className="text-white hover:text-cyan-400 transition">HOW IT WORK</a>
-              <a href="#" className="text-white hover:text-cyan-400 transition">ANALYS</a>
-              <a href="#" className="text-white hover:text-cyan-400 transition">Login</a>
+              <a href="#home" className="text-white hover:text-cyan-400 transition">HOME</a>
+              <a href="#feature" className="text-white hover:text-cyan-400 transition">FEATURE</a>
+              <a href="#work" className="text-white hover:text-cyan-400 transition">HOW IT WORK</a>
+              <a href="#analyze" className="text-white hover:text-cyan-400 transition">ANALYZE</a>
+              <a href="/login" className="text-white hover:text-cyan-400 transition">Login</a>
             </div>
           )}
         </nav>
@@ -66,7 +66,7 @@ export default function Home() {
 
         <div className="relative z-10">
           {/* Hero Section */}
-          <section className="w-full min-h-[100vh] md:min-h-[110vh] py-32 px-8 text-center relative flex items-center justify-center" style={{backgroundImage: "url('/images/hero-bg.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
+          <section id="home" className="w-full min-h-[100vh] md:min-h-[110vh] py-32 px-8 text-center relative flex items-center justify-center" style={{backgroundImage: "url('/images/hero-bg.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
             {/* particles canvas (below overlay and content) */}
             <ParticleCanvas />
 
@@ -88,7 +88,7 @@ export default function Home() {
           </section>
 
           {/* The Dual Core Engine */}
-          <section className="w-full py-20 px-8 bg-[#06060A]">
+          <section id="feature" className="w-full py-20 px-8 bg-[#06060A]">
             <h2 className="text-4xl font-bold text-white text-center mb-16">The Dual Core Engine</h2>
             <p className="text-gray-400 text-center max-w-2xl mx-auto mb-16">
               Dapatkan analisis mendalam dari setiap piksel foto dan basis caption Anda. Teknologi AI kami memindahkan sentimen, memprediksi engagement, dan memberikan wawasan data yang tidak terbatas oleh mata biasa.
@@ -124,7 +124,7 @@ export default function Home() {
           </section>
 
           {/* How It Work */}
-          <section className="w-full py-20 px-8 bg-[#06060A]">
+          <section id="work" className="w-full py-20 px-8 bg-[#06060A]">
             <h2 className="text-4xl font-bold text-white text-center mb-16">How It Work</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
@@ -161,7 +161,7 @@ export default function Home() {
           </section>
 
           {/* Call to Action */}
-          <section className="w-full py-20 px-8 text-center bg-[#06060A]">
+          <section id="analyze" className="w-full py-20 px-8 text-center bg-[#06060A]">
             <h2 className="text-4xl font-bold text-white mb-4">
               Don't Just Post<br />Dominate the Algorithm
             </h2>
