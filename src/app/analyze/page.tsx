@@ -120,7 +120,7 @@ export default function AnalyzePage() {
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-8 py-20">
           <div className="max-w-2xl w-full text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              content analys
+              content analyze
             </h1>
             <p className="text-gray-400 text-base md:text-lg mb-12">
               upload konten anda dengan meneken tombol di bawah ini dan AI kami akan

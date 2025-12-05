@@ -18,7 +18,7 @@ export default function LoginPage() {
       <main className="relative z-20 w-full max-w-md mx-6">
         <div className="bg-gradient-to-br from-[#1a2332] to-[#0f1419] rounded-3xl p-12 border border-cyan-400/30 shadow-2xl shadow-cyan-400/20">
           {/* Title */}
-          <h1 className="text-4xl font-bold text-white text-center mb-12">NOCAP.AI</h1>
+          <h1 className="text-4xl font-bold text-white text-center mb-12"><a href="/">NOCAP.AI</a></h1>
 
           <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
             {/* Email Input */}
