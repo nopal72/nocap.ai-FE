@@ -1,16 +1,51 @@
 "use client"
 
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import ParticleCanvas from "@/components/ui/particlecanvas"
-import { Upload, User } from "lucide-react"
+import { Upload, User, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { useIsMobile } from "@/hooks/use-mobile"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function AnalyzePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   const isMobile = useIsMobile()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL
+    try {
+      const response = await fetch(`${apiBaseUrl}/auth/sign-out`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (response.ok) {
+        // Handle successful sign out, e.g., clear user session, redirect to login
+        router.push("/login")
+      } else {
+        // Handle errors
+        console.error("Sign out failed")
+      }
+    } catch (error) {
+      console.error("An error occurred during sign out:", error)
+    }
+  }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -94,11 +129,20 @@ export default function AnalyzePage() {
               )}
 
               {/* Profile & Credits */}
-              <div className="flex items-center text-white">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-white hover:border-cyan-400 transition cursor-pointer">
-                  <User size={20} className="text-white" />
-                </div>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-white hover:border-cyan-400 transition cursor-pointer">
+                    <User size={20} className="text-white" />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-48 bg-[#1a2332] text-white border-cyan-400/30">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer hover:bg-cyan-400/20">
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 

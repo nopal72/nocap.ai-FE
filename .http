@@ -1,0 +1,26 @@
+GET http://192.168.18.31:3000/auth/ok
+
+###
+POST http://192.168.18.31:3000/auth/sign-in/social
+Origin: http://localhost:3000
+Content-Type: application/json
+
+{
+    "provider": "google"
+}
+
+###
+POST http://192.168.18.31:3000/auth/sign-up/email
+Origin: http://localhost:3000
+Content-Type: application/json
+
+{
+    "email": "budi@example.com",
+    "name": "budi", 
+    "password": "budi12345", 
+    "rememberMe": true 
+}
+
+###
+POST http://192.168.18.31:3000/auth/sign-out
+Origin: http://localhost:3000

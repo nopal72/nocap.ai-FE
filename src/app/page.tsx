@@ -43,10 +43,10 @@ export default function Home() {
               )}
               
               {/* Login */}
-              <div className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
+              <a href="/login"className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
                 <User size={24} />
-                {!isMobile && <a href="/login">Login</a>}
-              </div>
+                {!isMobile && <span>Login</span>}
+              </a>
             </div>
           </div>
 
