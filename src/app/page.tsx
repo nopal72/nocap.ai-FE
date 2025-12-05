@@ -27,7 +27,7 @@ export default function Home() {
                 <a href="#home" className="text-white hover:text-cyan-400 transition">HOME</a>
                 <a href="#feature" className="text-white hover:text-cyan-400 transition">FEATURE</a>
                 <a href="#work" className="text-white hover:text-cyan-400 transition">HOW IT WORK</a>
-                <a href="/login" className="text-white hover:text-cyan-400 transition">ANALYZE</a>
+                <a href="#analyze" className="text-white hover:text-cyan-400 transition">ANALYZE</a>
               </div>
             )}
 
@@ -81,9 +81,9 @@ export default function Home() {
               <p className="text-gray-300 text-base md:text-lg max-w-3xl mx-auto mb-8">
                 Dapatkan analisis mendalam dari setiap piksel foto dan basis caption Anda. Teknologi AI kami memindahkan sentimen, memprediksi engagement, dan memberikan wawasan data yang tidak terbatas oleh mata biasa.
               </p>
-              <button className="bg-cyan-400 text-slate-900 font-bold px-6 md:px-8 py-2 md:py-3 rounded-full hover:bg-cyan-300 transition">
+              <a href="/analyze" className="bg-cyan-400 text-slate-900 font-bold px-6 md:px-8 py-2 md:py-3 rounded-full hover:bg-cyan-300 transition">
                 try it now
-              </button>
+              </a>
             </div>
           </section>
 
@@ -168,9 +168,9 @@ export default function Home() {
             <p className="text-gray-400 mb-8">
               Tingkatkan cara lama. Mulai gunakan kecerdasan buatan untuk strategi posting yang lebih baik
             </p>
-            <button className="bg-cyan-400 text-slate-900 font-bold px-8 py-3 rounded-full hover:bg-cyan-300 transition">
+            <a href="/analyze" className="bg-cyan-400 text-slate-900 font-bold px-8 py-3 rounded-full hover:bg-cyan-300 transition">
               Start Analize
-            </button>
+            </a>
           </section>
         </div>
 
@@ -194,10 +194,10 @@ export default function Home() {
               <div>
                 <h4 className="text-xl font-bold text-white mb-6">Navigation</h4>
                 <ul className="space-y-3">
-                  <li><a href="#" className="text-gray-400 hover:text-cyan-400 transition">HOME</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-cyan-400 transition">FEATURE</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-cyan-400 transition">HOW IT WORK</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-cyan-400 transition">ANALYST</a></li>
+                  <li><a href="#home" className="text-gray-400 hover:text-cyan-400 transition">HOME</a></li>
+                  <li><a href="#feature" className="text-gray-400 hover:text-cyan-400 transition">FEATURE</a></li>
+                  <li><a href="#work" className="text-gray-400 hover:text-cyan-400 transition">HOW IT WORK</a></li>
+                  <li><a href="#analyze" className="text-gray-400 hover:text-cyan-400 transition">ANALYSZE</a></li>
                 </ul>
               </div>
 

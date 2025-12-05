@@ -81,7 +81,7 @@ export default function ResultPage() {
                           fill="none"
                           stroke="#00D9FF"
                           strokeWidth="3"
-                          strokeDasharray={`${45 * 2 * Math.PI * 0.78} ${45 * 2 * Math.PI}`}
+                          strokeDasharray={`${45 * 2 * Math.PI * 0.90} ${45 * 2 * Math.PI}`}
                           strokeLinecap="round"
                           filter="drop-shadow(0 0 8px #00D9FF)"
                         />

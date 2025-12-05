@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Eye, EyeOff, Mail, Lock } from "lucide-react"
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -53,12 +53,32 @@ export default function LoginPage() {
               </button>
             </div>
 
+            {/* Password Confirmation */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="password confirmation"
+                className="w-full bg-[#1f2937] border-2 border-cyan-400/50 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 transition pr-12"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-cyan-400 transition"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
+
             {/* Sign In Button */}
             <button
               type="submit"
               className="bg-cyan-400 text-slate-900 font-bold py-3 rounded-xl hover:bg-cyan-300 transition mt-2"
             >
-              Sign in
+              Sign up
             </button>
           </form>
 
@@ -80,8 +100,8 @@ export default function LoginPage() {
           {/* Signup Link */}
           <p className="text-center text-gray-400 text-sm mt-8">
             don't have an account?{" "}
-            <a href="/signup" className="text-cyan-400 font-semibold hover:text-cyan-300 transition">
-              signup
+            <a href="/login" className="text-cyan-400 font-semibold hover:text-cyan-300 transition">
+              login
             </a>
           </p>
         </div>
