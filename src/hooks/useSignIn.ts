@@ -48,6 +48,9 @@ export const useSignIn = () => {
 
       const data = await response.json();
       
+      // Store user data in local storage
+      localStorage.setItem('userData', JSON.stringify(data));
+
       // On successful sign-in, you might want to store tokens from 'data' here.
       // For now, redirecting to the analyze page.
       router.push('/analyze');

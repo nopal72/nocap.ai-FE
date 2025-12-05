@@ -26,6 +26,9 @@ export default function AnalyzePage() {
   const router = useRouter()
 
   const handleSignOut = async () => {
+    // Immediately clear user data from local storage to log the user out on the client.
+    localStorage.removeItem('userData');
+    
     const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL
     try {
       const response = await fetch(`${apiBaseUrl}/auth/sign-out`, {
@@ -35,15 +38,15 @@ export default function AnalyzePage() {
         },
       })
 
-      if (response.ok) {
-        // Handle successful sign out, e.g., clear user session, redirect to login
-        router.push("/login")
-      } else {
-        // Handle errors
-        console.error("Sign out failed")
+      if (!response.ok) {
+        // Even if the server fails, the user is logged out on the client.
+        console.error("Sign out failed on server.")
       }
     } catch (error) {
       console.error("An error occurred during sign out:", error)
+    } finally {
+      // Always redirect to the login page after attempting to sign out.
+      router.push("/login")
     }
   }
 

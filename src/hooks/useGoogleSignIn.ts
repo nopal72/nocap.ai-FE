@@ -1,5 +1,6 @@
 "use client";
 
+import apiInstance from '@/lib/fetchClient';
 import { useState } from 'react';
 
 /**
@@ -20,23 +21,16 @@ export const useGoogleSignIn = () => {
     setError(null);
 
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL ;
-      const response = await fetch(`${apiBaseUrl}/auth/sign-in/social`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ provider: 'google' }), // Assuming the backend needs to know the provider
+      const data = await apiInstance.post<{url: string}>('/auth/sign-in/social',{
+        provider: 'google'
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to get Google sign-in URL.');
+      // The backend provides the Google auth URL in the 'url' property.
+      if (data) {
+        window.location.href = data.data.url;
+      } else {
+        throw new Error('Could not get redirect URL from the server.');
       }
-
-      const data = await response.json();
-
-      window.location.href = "/analyze";
 
     } catch (err: any) {
       setError(err.message);
