@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from '@/lib/auth';
 import apiInstance from '@/lib/fetchClient';
 import { useState } from 'react';
 
@@ -20,24 +21,24 @@ export const useGoogleSignIn = () => {
     setLoading(true);
     setError(null);
 
-    try {
-      const data = await apiInstance.post<{url: string}>('/auth/sign-in/social',{
-        provider: 'google'
-      });
+      // const data = await apiInstance.post<{url: string}>('/auth/sign-in/social',{
+      //   provider: 'google',
+      //   callbackURL: `${window.location.origin}/auth/callback/google`
+      // });
 
-      // The backend provides the Google auth URL in the 'url' property.
-      if (data) {
-        window.location.href = data.data.url;
-      } else {
-        throw new Error('Could not get redirect URL from the server.');
+      const { error } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: `${window.location.origin}/analyze`
+      })
+
+      if (error && error.message) {
+        setError(error.message);
+        console.error('An error occurred during sign-in:', error);
+        // Only stop loading on error, as success navigates away from the page.
+        setLoading(false);
+        return
       }
 
-    } catch (err: any) {
-      setError(err.message);
-      console.error('An error occurred during sign-in:', err);
-      // Only stop loading on error, as success navigates away from the page.
-      setLoading(false);
-    }
   };
 
   return { signIn, loading, error };

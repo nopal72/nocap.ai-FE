@@ -1,7 +1,6 @@
 "use client"
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import * as React from "react"
 import { User, Menu, X, Zap, TrendingUp } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import ParticleCanvas from "@/components/ui/particlecanvas"
@@ -43,7 +42,7 @@ export default function Home() {
               )}
               
               {/* Login */}
-              <a href="/login"className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
+              <a href="/login"  className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
                 <User size={24} />
                 {!isMobile && <span>Login</span>}
               </a>

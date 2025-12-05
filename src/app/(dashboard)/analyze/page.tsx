@@ -6,6 +6,7 @@ import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Upload, User, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useSignOut } from "@/hooks/useSignOut"
 
 import {
   DropdownMenu,
@@ -24,30 +25,10 @@ export default function AnalyzePage() {
 
   const isMobile = useIsMobile()
   const router = useRouter()
+  const { signOut } = useSignOut()
 
   const handleSignOut = async () => {
-    // Immediately clear user data from local storage to log the user out on the client.
-    localStorage.removeItem('userData');
-    
-    const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL
-    try {
-      const response = await fetch(`${apiBaseUrl}/auth/sign-out`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-
-      if (!response.ok) {
-        // Even if the server fails, the user is logged out on the client.
-        console.error("Sign out failed on server.")
-      }
-    } catch (error) {
-      console.error("An error occurred during sign out:", error)
-    } finally {
-      // Always redirect to the login page after attempting to sign out.
-      router.push("/login")
-    }
+    await signOut()
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
