@@ -33,7 +33,7 @@ export const useSignIn = () => {
 
   
       // Note: Using '/auth/sign-in' for standard email/password login.
-  const {error} =    await authClient.signIn.email({ email, password });
+      const {error} = await authClient.signIn.email({ email, password });
 
     if (error && error.message) {
       setError(error.message);
