@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { authClient } from '@/lib/auth';
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { authClient } from "@/lib/auth"
+import Cookies from "js-cookie"
 
 /**
  * Defines the structure for the sign-in function parameters.
@@ -31,23 +32,31 @@ export const useSignIn = () => {
     setLoading(true);
     setError(null);
 
-  
+    try {
       // Note: Using '/auth/sign-in' for standard email/password login.
-      const {error} = await authClient.signIn.email({ email, password });
+      const { error, data } = await authClient.signIn.email({ email, password });
 
-    if (error && error.message) {
-      setError(error.message);
-      console.error('An error occurred during sign-in:', error);
-      setLoading(false);
-      return;
-    }
+      if (error) {
+        setError(error.message || "An unknown error occurred.");
+        return;
+      }
 
-      // On successful sign-in, you might want to store tokens from 'data' here.
+      // Save token to a cookie instead of localStorage
+      if (data?.token) {
+        const cookieOptions: Cookies.CookieAttributes = { path: "/" };
+        if (rememberMe) {
+          cookieOptions.expires = 7; // Persist for 7 days
+        }
+        Cookies.set("auth_token", data.token, cookieOptions);
+      }
+
       // For now, redirecting to the analyze page.
-      router.push('/analyze');
-
-   
-
+      router.push("/analyze");
+    } catch (e: any) {
+      setError(e.message || "An unexpected error occurred during sign-in.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return { signIn, loading, error };

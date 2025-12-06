@@ -18,14 +18,10 @@
 
 // module.exports = nextConfig
 
-
-module.exports = {
-    async rewrites() {
-        return [
-            {
-                source: '/auth/:path*',
-                destination: 'http://localhost:3000`/auth/:path*' // Proxy to Backend
-            }
-        ]
-    }
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    experimental: {
+        instrumentationHook: true
+    },   
 }
+export default nextConfig;

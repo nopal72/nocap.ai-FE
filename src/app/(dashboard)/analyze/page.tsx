@@ -7,6 +7,7 @@ import { Upload, User, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useSignOut } from "@/hooks/useSignOut"
+import { useImageAnalysis } from "@/hooks/useImageAnalysis"
 
 import {
   DropdownMenu,
@@ -26,6 +27,13 @@ export default function AnalyzePage() {
   const isMobile = useIsMobile()
   const router = useRouter()
   const { signOut } = useSignOut()
+  const {
+    generateAnalysis,
+    loadingState,
+    uploadProgress,
+    analysisResult,
+    error,
+  } = useImageAnalysis()
 
   const handleSignOut = async () => {
     await signOut()
@@ -34,14 +42,18 @@ export default function AnalyzePage() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setSelectedFile(file)
-      // create preview
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setPreview(event.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+      handleFile(file)
     }
+  }
+
+  const handleFile = (file: File) => {
+    setSelectedFile(file)
+    // Create a preview URL
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setPreview(event.target?.result as string)
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleSelectFileClick = () => {
@@ -62,13 +74,17 @@ export default function AnalyzePage() {
     e.preventDefault()
     e.currentTarget.classList.remove("border-cyan-400")
     const file = e.dataTransfer.files?.[0]
-    if (file) {
-      setSelectedFile(file)
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setPreview(event.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+    if (file && file.type.startsWith("image/")) {
+      handleFile(file)
+    }
+  }
+
+  const handleAnalyzeClick = () => {
+    if (selectedFile) {
+      generateAnalysis(selectedFile).then((result) => {
+        // After analysis is successful, you might want to redirect
+        // For now, we'll rely on the hook's state to show results
+      })
     }
   }
 
@@ -160,7 +176,7 @@ export default function AnalyzePage() {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className="border-2 border-dashed border-gray-600 rounded-2xl p-12 mb-6 transition-colors hover:border-cyan-400 cursor-pointer"
+              className="border-2 border-dashed border-gray-600 rounded-2xl p-12 mb-6 transition-colors duration-300 hover:border-cyan-400 cursor-pointer"
               onClick={handleSelectFileClick}
             >
               {preview ? (
@@ -170,7 +186,9 @@ export default function AnalyzePage() {
                     alt="preview"
                     className="max-h-48 rounded-lg object-cover"
                   />
-                  <p className="text-gray-400 text-sm">Click atau drag untuk ubah file</p>
+                  <p className="text-gray-400 text-sm">
+                    Click atau drag untuk ubah file
+                  </p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-4">
@@ -182,26 +200,49 @@ export default function AnalyzePage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/png, image/jpeg, image/webp"
                 onChange={handleFileSelect}
                 className="hidden"
               />
             </div>
 
-            {/* select file button */}
-            <button
-              onClick={handleSelectFileClick}
-              className="bg-cyan-400 text-slate-900 font-bold px-8 py-3 rounded-full hover:bg-cyan-300 transition mb-4"
-            >
-              select file
-            </button>
+            {/* Action Button & Status */}
+            <div className="h-20 flex flex-col items-center justify-center">
+              {loadingState === "idle" && selectedFile && (
+                <button
+                  onClick={handleAnalyzeClick}
+                  className="bg-cyan-400 text-slate-900 font-bold px-8 py-3 rounded-full hover:bg-cyan-300 transition mb-4"
+                >
+                  Analyze Now
+                </button>
+              )}
 
-            {/* file info */}
-            <p className="text-gray-500 text-sm">
-              {selectedFile
-                ? `File dipilih: ${selectedFile.name}`
-                : "atau seret file nya kesini"}
-            </p>
+              {loadingState === "presigning" && (
+                <p className="text-cyan-400">Preparing upload...</p>
+              )}
+
+              {loadingState === "uploading" && (
+                <div className="w-full max-w-sm">
+                  <p className="text-white mb-2">Uploading: {uploadProgress}%</p>
+                  <div className="w-full bg-gray-700 rounded-full h-2.5">
+                    <div
+                      className="bg-cyan-400 h-2.5 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+
+              {loadingState === "analyzing" && (
+                <p className="text-cyan-400">Analyzing image, please wait...</p>
+              )}
+
+              {loadingState === "success" && (
+                <p className="text-green-400">Analysis complete! Redirecting...</p>
+              )}
+
+              {error && <p className="text-red-500">Error: {error}</p>}
+            </div>
           </div>
         </div>
       </main>

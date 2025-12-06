@@ -4,13 +4,13 @@ import { authClient } from "./lib/auth";
 
 export async function proxy(request: NextRequest) {
   // Get the user from the server-side auth-client helper
-  const {data, error} = await authClient.getSession()
+  // const {data, error} = await authClient.getSession()
   // const { pathname } = request.nextUrl;
 
 
-  const isAuthenticated = !!data?.user && !error;
+  // const isAuthenticated = !!data?.user && !error;
 
-  console.log("Proxy middleware - isAuthenticated:", isAuthenticated, data, error);
+  // console.log("Proxy middleware - isAuthenticated:", isAuthenticated, data, error);
 
   // // Routes that are accessible to everyone
   // const publicRoutes = ["/login", "/register"];

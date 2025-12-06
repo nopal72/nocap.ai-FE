@@ -9,12 +9,14 @@ export const useSignOut = () => {
   const signOut = async () => {
       const {error} =await authClient.signOut();
 
-
       if (error && error.message) {
         // Even if the server fails, the user is logged out on the client.
         console.error("Sign out failed on server.", error.message)
         return
       }
+
+      // Remove the token from local storage.
+      localStorage.removeItem('auth_token');
    
       // Always redirect to the login page after attempting to sign out.
       router.push("/")
