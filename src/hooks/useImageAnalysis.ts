@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 
 // Define the structure for the analysis result based on your mock handler
 interface AnalysisResult {
+  accessUrl?: string | null; // Add this to carry the clean URL
   curation: { isAppropriate: boolean; labels: string[]; risk: string; notes: string; };
   caption: { text: string; alternatives: string[]; };
   songs: { title: string; artist: string; reason: string; }[];
@@ -37,14 +38,14 @@ export const useImageAnalysis = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const generateAnalysis = useCallback(async (file: File) => {
+  const generateAnalysis = useCallback(async (file: File,previewUrl: string | null) => {
     // 1. Reset state for a new run
     setLoadingState('presigning');
     setError(null);
     setUploadProgress(0);
     setAnalysisResult(null);
 
-    const token = localStorage.getItem('auth_token');
+    const token = Cookies.get('auth_token');
     if (!token) {
       setError('Authentication token not found. Please sign in again.');
       setLoadingState('error');
@@ -70,7 +71,7 @@ export const useImageAnalysis = () => {
         throw new Error(errorData.message || 'Failed to get upload URL.');
       }
 
-      const { uploadUrl, fileKey } = await presignResponse.json();
+      const { uploadUrl, fileKey, accessUrl } = await presignResponse.json();
 
       // 3. Upload the file directly to the storage URL (e.g., S3)
       setLoadingState('uploading');
@@ -102,7 +103,7 @@ export const useImageAnalysis = () => {
       setAnalysisResult(result);
       
       // Store the result in session storage to pass it to the next page
-      sessionStorage.setItem('analysisResult', JSON.stringify(result));
+      sessionStorage.setItem('analysisResult', JSON.stringify({ ...result, accessUrl }));
 
       setLoadingState('success');
       router.push('/result');

@@ -81,7 +81,7 @@ export default function AnalyzePage() {
 
   const handleAnalyzeClick = () => {
     if (selectedFile) {
-      generateAnalysis(selectedFile).then((result) => {
+      generateAnalysis(selectedFile, preview).then((result) => {
         // After analysis is successful, you might want to redirect
         // For now, we'll rely on the hook's state to show results
       })

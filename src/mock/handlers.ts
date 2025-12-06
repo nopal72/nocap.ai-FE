@@ -114,7 +114,7 @@ export const handlers = [
       curation: { isAppropriate: true, labels: ["outdoor", "landscape", "nature"], risk: "low", notes: "No sensitive content detected." },
       caption: { text: "Sunset hues over the quiet coastline.", alternatives: ["Golden hour by the sea.", "A calm evening embracing the shore."] },
       songs: [
-        { title: "Ocean Eyes", artist: "Billie Eilish", reason: "Calm coastal vibe" },
+        { title: "WHAT THE FUCK IS THISSSS", artist: "Billie Eilish", reason: "Calm coastal vibe" },
         { title: "Sunset Lover", artist: "Petit Biscuit", reason: "Warm sunset mood" }
       ],
       topics: [
