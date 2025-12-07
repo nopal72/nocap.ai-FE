@@ -189,7 +189,7 @@ export default function ResultPage() {
                 <div className="border border-cyan-400/50 rounded-xl p-6 flex items-center gap-4">
                   <Shield size={32} className="text-green-400" />
                   <div>
-                    <p className="text-gray-400 text-sm">SYSTEM SECURE:</p>
+                    <p className="text-gray-400 text-sm">OVERALL SCORE:</p>
                     <p className="text-green-400 font-bold text-lg capitalize">
                       Risk {result.curation.risk}
                     </p>
