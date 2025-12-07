@@ -60,8 +60,6 @@ export const useImageAnalysis = () => {
       // --- LOGIKA KOMPRESI GAMBAR ---
       // Cek jika ukuran file melebihi batas maksimal (2MB)
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-        console.log(`Original file size: ${(file.size / 1024 / 1024).toFixed(2)}MB. Compressing...`);
-        
         // Opsi untuk kompresi
         const options = {
           maxSizeMB: MAX_SIZE_MB,
@@ -69,12 +67,10 @@ export const useImageAnalysis = () => {
           useWebWorker: true,      // Opsional: Menggunakan web worker agar UI tidak freeze
           onProgress: (p: number) => {
             // Anda bisa membuat state baru untuk progress kompresi jika mau
-            console.log(`Compression Progress: ${p}%`);
           },
         };
 
         processedFile = await imageCompression(file, options);
-        console.log(`Compressed file size: ${(processedFile.size / 1024 / 1024).toFixed(2)}MB`);
       }
 
       // 2. Get the pre-signed URL from our backend

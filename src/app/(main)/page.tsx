@@ -15,8 +15,6 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  console.log('token home page:', Cookies.get('auth_token'))
-
   // Check if user is authenticated
   useEffect(() => {
     const token = Cookies.get('auth_token')

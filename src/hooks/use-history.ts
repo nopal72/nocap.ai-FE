@@ -72,7 +72,6 @@ export const useHistory = ({ limit = 20 }: UseHistoryProps = {}) => {
       });
       const { items: newItems, pageInfo: newPageInfo } = response.data;
 
-      console.log('Fetched history items:', newItems);
 
       setItems(prev => (cursor ? [...prev, ...newItems] : newItems));
       setPageInfo(newPageInfo);
@@ -81,7 +80,6 @@ export const useHistory = ({ limit = 20 }: UseHistoryProps = {}) => {
       const errorMessage = err.response?.data?.message || 'Failed to fetch history.';
       setError(errorMessage);
       setStatus('error');
-      console.error('[useHistory] Error fetching history:', err);
     } finally {
       isFetchingRef.current = false;
     }

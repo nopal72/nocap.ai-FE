@@ -36,7 +36,7 @@ export const useSignIn = () => {
       // Note: Using '/auth/sign-in' for standard email/password login.
       const { error, data } = await authClient.signIn.email({ email, password },{
         onSuccess: (ctx)=>{
-          const authToken = ctx.response.headers.get("set-auth-token"); console.log('auth token on sign in:', authToken);
+          const authToken = ctx.response.headers.get("set-auth-token")
           Cookies.set("auth_token", authToken!);
         }
       });
@@ -45,16 +45,6 @@ export const useSignIn = () => {
         setError(error.message || "An unknown error occurred.");
         return;
       }
-
-      // Save token to a cookie
-      // if (data?.token) {
-      //   const cookieOptions: Cookies.CookieAttributes = { path: "/" };
-      //   if (rememberMe) {
-      //     cookieOptions.expires = 7; // Persist for 7 days
-      //   }
-      // }
-
-      console.log("Sign-in successful with token:", Cookies.get("auth_token"));
 
       // For now, redirecting to the analyze page.
       router.push("/analyze");

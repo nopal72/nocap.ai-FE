@@ -59,8 +59,6 @@ export default function ResultPage() {
     }
   }, [historyId, fetchDetail, router])
 
-  console.log('History Detail:', historyDetail)
-
   // Convert history detail to result format
   useEffect(() => {
     if (historyDetail && isFromHistory) {

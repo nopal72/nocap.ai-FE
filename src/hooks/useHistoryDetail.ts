@@ -78,7 +78,6 @@ export const useHistoryDetail = (historyId?: string) => {
       const errorMessage = err.response?.data?.message || 'Failed to fetch history detail.';
       setError(errorMessage);
       setStatus('error');
-      console.error('[useHistoryDetail] Error fetching detail:', err);
     }
   }, []);
 
