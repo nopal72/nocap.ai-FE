@@ -1,13 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Cookies from 'js-cookie'
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Search, Loader } from "lucide-react"
 import TopNavbar from "@/components/ui/topnavbar"
 import { useHistory, type HistoryItem } from "@/hooks/use-history"
-import { setMockAuthToken } from "@/lib/test-helpers"
 import Link from "next/link"
 
 interface DisplayHistoryItem extends HistoryItem {
@@ -18,20 +17,24 @@ export default function HistoryPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("Newest")
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const { items, status, error, pageInfo, fetchNextPage, loadFirstPage } = useHistory({ limit: 20 })
   const [displayItems, setDisplayItems] = useState<DisplayHistoryItem[]>([])
+  const hasInitialized = useRef(false)
 
   // Check authentication and initialize data
   useEffect(() => {
     const token = Cookies.get('auth_token')
-    if (token) {
-      setIsAuthenticated(true)
-      loadFirstPage()
+    if (!token) {
+      router.replace('/login')
     } else {
-      setIsAuthenticated(false)
+      setIsLoading(false)
+      if (!hasInitialized.current) {
+        hasInitialized.current = true
+        loadFirstPage()
+      }
     }
-  }, [loadFirstPage])
+  }, [router])
 
   // Update display items based on search and sort
   useEffect(() => {
@@ -76,6 +79,20 @@ export default function HistoryPage() {
     return 40 + (Math.abs(hash) % 60) // Score between 40 and 100
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden flex items-center justify-center">
+        <ParticleCanvas />
+        <div className="relative z-20">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+            <p className="text-white mt-4">Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden">
       {/* particles */}
@@ -88,29 +105,6 @@ export default function HistoryPage() {
         {/* main content */}
         <div className="px-8 py-12">
           <div className="max-w-7xl mx-auto">
-            {/* Authentication warning */}
-            {!isAuthenticated && (
-              <div className="bg-yellow-900/20 border border-yellow-500 rounded-lg p-4 text-yellow-400 mb-6 flex items-center justify-between">
-                <div>
-                  Please log in to view your scan history.{' '}
-                  <Link href="/login" className="underline hover:text-yellow-300">
-                    Go to login
-                  </Link>
-                </div>
-                {process.env.NODE_ENV === 'development' && (
-                  <button
-                    onClick={() => {
-                      setMockAuthToken()
-                      setIsAuthenticated(true)
-                      setTimeout(() => loadFirstPage(), 100)
-                    }}
-                    className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-sm whitespace-nowrap ml-4"
-                  >
-                    Use Mock Token (Dev)
-                  </button>
-                )}
-              </div>
-            )}
 
             {/* Header with search and sort */}
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

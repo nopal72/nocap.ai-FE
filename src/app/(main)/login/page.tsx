@@ -1,23 +1,50 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import Cookies from 'js-cookie'
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { useGoogleSignIn } from "@/hooks/useGoogleSignIn"
 import { useSignIn } from "@/hooks/useSignIn"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const { signIn: googleSignIn, loading: googleLoading, error: googleError } = useGoogleSignIn()
   const { signIn, loading, error } = useSignIn()
 
+  // Check if user is already authenticated and redirect
+  useEffect(() => {
+    const token = Cookies.get('auth_token')
+    if (token) {
+      // User already logged in, redirect to analyze
+      router.replace('/analyze')
+    } else {
+      setIsLoading(false)
+    }
+  }, [router])
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     await signIn({ email, password, rememberMe })
+  }
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden flex items-center justify-center">
+        <ParticleCanvas />
+        <div className="relative z-20">
+          <p className="text-cyan-400">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

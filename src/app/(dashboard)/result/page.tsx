@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import Cookies from "js-cookie"
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Copy, Shield, Music, Tag, Loader } from "lucide-react"
 import Link from "next/link"
@@ -23,10 +24,21 @@ export default function ResultPage() {
   const [copiedCaption, setCopiedCaption] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [isFromHistory, setIsFromHistory] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
   const searchParams = useSearchParams()
   const historyId = searchParams.get('historyId')
   const { item: historyDetail, status: historyStatus, fetchDetail } = useHistoryDetail()
+
+  // Check authentication on mount
+  useEffect(() => {
+    const token = Cookies.get('auth_token')
+    if (!token) {
+      router.replace('/login')
+    } else {
+      setIsLoading(false)
+    }
+  }, [router])
 
   // Effect to handle data loading
   useEffect(() => {
@@ -67,6 +79,20 @@ export default function ResultPage() {
       setResult(converted)
     }
   }, [historyDetail, isFromHistory])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden flex items-center justify-center">
+        <ParticleCanvas />
+        <div className="relative z-20">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+            <p className="text-white mt-4">Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const handleCopyCaption = () => {
     if (result?.caption.text) {

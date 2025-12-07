@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { apiClient } from '@/lib/api-client';
 
 /**
@@ -43,11 +43,13 @@ export const useHistory = ({ limit = 20 }: UseHistoryProps = {}) => {
   });
   const [status, setStatus] = useState<FetchStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const isFetchingRef = useRef(false);
 
   const fetchHistory = useCallback(async (cursor?: string | null) => {
-    // Prevent fetching if there are no more pages
-    if (cursor === null && status !== 'idle') return;
+    // Prevent multiple simultaneous requests
+    if (isFetchingRef.current) return;
 
+    isFetchingRef.current = true;
     setStatus('loading');
     setError(null);
 
@@ -70,21 +72,22 @@ export const useHistory = ({ limit = 20 }: UseHistoryProps = {}) => {
       setError(errorMessage);
       setStatus('error');
       console.error('[useHistory] Error fetching history:', err);
+    } finally {
+      isFetchingRef.current = false;
     }
-  }, [limit, status]);
+  }, [limit]);
 
   const fetchNextPage = useCallback(() => {
-    if (pageInfo.hasNextPage && status !== 'loading') {
+    if (pageInfo.hasNextPage && !isFetchingRef.current) {
       fetchHistory(pageInfo.nextCursor);
     }
-  }, [fetchHistory, pageInfo.hasNextPage, pageInfo.nextCursor, status]);
+  }, [fetchHistory, pageInfo.hasNextPage, pageInfo.nextCursor]);
 
-  // Initial fetch is handled by fetchNextPage as well
   const loadFirstPage = useCallback(() => {
-    if (status === 'idle') {
+    if (!isFetchingRef.current) {
       fetchHistory();
     }
-  }, [status, fetchHistory]);
+  }, [fetchHistory]);
 
   return { items, status, error, pageInfo, fetchNextPage, loadFirstPage };
 };

@@ -4,11 +4,21 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { User, Menu, X, Zap, TrendingUp } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import ParticleCanvas from "@/components/ui/particlecanvas"
+import Cookies from 'js-cookie'
+import { useRouter } from "next/navigation"
 
 export default function Home() {
 
   const isMobile = useIsMobile()
+  const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const token = Cookies.get('auth_token')
+    setIsAuthenticated(!!token)
+  }, [])
 
   return (
     <div className="min-h-screen w-full bg-[#06060A] font-sans overflow-x-hidden">
@@ -41,11 +51,21 @@ export default function Home() {
                 </button>
               )}
               
-              {/* Login */}
-              <a href="/login"  className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
-                <User size={24} />
-                {!isMobile && <span>Login</span>}
-              </a>
+              {/* Login - Only show if not authenticated */}
+              {!isAuthenticated && (
+                <a href="/login"  className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
+                  <User size={24} />
+                  {!isMobile && <span>Login</span>}
+                </a>
+              )}
+              
+              {/* Dashboard - Only show if authenticated */}
+              {isAuthenticated && (
+                <a href="/analyze" className="flex items-center gap-2 text-white cursor-pointer hover:text-cyan-400 transition">
+                  <User size={24} />
+                  {!isMobile && <span>Dashboard</span>}
+                </a>
+              )}
             </div>
           </div>
 
@@ -56,7 +76,12 @@ export default function Home() {
               <a href="#feature" className="text-white hover:text-cyan-400 transition">FEATURE</a>
               <a href="#work" className="text-white hover:text-cyan-400 transition">HOW IT WORK</a>
               <a href="#analyze" className="text-white hover:text-cyan-400 transition">ANALYZE</a>
-              <a href="/login" className="text-white hover:text-cyan-400 transition">Login</a>
+              {!isAuthenticated && (
+                <a href="/login" className="text-white hover:text-cyan-400 transition">Login</a>
+              )}
+              {isAuthenticated && (
+                <a href="/analyze" className="text-white hover:text-cyan-400 transition">Dashboard</a>
+              )}
             </div>
           )}
         </nav>

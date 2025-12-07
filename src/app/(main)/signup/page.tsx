@@ -1,12 +1,16 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import Cookies from "js-cookie"
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react"
 import { useGoogleSignIn } from "@/hooks/useGoogleSignIn"
 import { useSignUp } from "@/hooks/useSignUp"
 
 export default function SignupPage() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -16,9 +20,32 @@ export default function SignupPage() {
   const { signIn: googleSignIn, loading: googleLoading, error: googleError } = useGoogleSignIn()
   const { signUp, loading, error } = useSignUp()
 
+  useEffect(() => {
+    const token = Cookies.get('auth_token')
+    if (token) {
+      router.replace('/analyze')
+    } else {
+      setIsLoading(false)
+    }
+  }, [router])
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     await signUp({ name, email, password, rememberMe })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden flex items-center justify-center">
+        <ParticleCanvas />
+        <div className="relative z-20">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+            <p className="text-white mt-4">Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

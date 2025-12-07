@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Cookies from "js-cookie"
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Upload } from "lucide-react"
 import TopNavbar from "@/components/ui/topnavbar"
@@ -11,6 +12,7 @@ export default function AnalyzePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const router = useRouter()
   const {
@@ -20,6 +22,16 @@ export default function AnalyzePage() {
     analysisResult,
     error,
   } = useImageAnalysis()
+
+  // Check authentication on mount
+  useEffect(() => {
+    const token = Cookies.get('auth_token')
+    if (!token) {
+      router.replace('/login')
+    } else {
+      setIsLoading(false)
+    }
+  }, [router])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -36,6 +48,20 @@ export default function AnalyzePage() {
       setPreview(event.target?.result as string)
     }
     reader.readAsDataURL(file)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden flex items-center justify-center">
+        <ParticleCanvas />
+        <div className="relative z-20">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+            <p className="text-white mt-4">Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const handleSelectFileClick = () => {
