@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Image from "next/image"
 
 interface TopNavbarProps {
   showBackButton?: boolean
@@ -49,7 +50,7 @@ export default function TopNavbar({
         {/* Logo - Left */}
         <Link href="/">
           <div className="text-white text-2xl font-bold px-6 py-3 min-w-fit cursor-pointer hover:text-cyan-400 transition">
-            NOCAP.AI
+            <Image src="/images/logo-dark.webp" alt="NOCAP.AI Logo" width={120} height={32} />
           </div>
         </Link>
 

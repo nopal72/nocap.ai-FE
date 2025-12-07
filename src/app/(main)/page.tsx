@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import Cookies from 'js-cookie'
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 export default function Home() {
 
@@ -27,7 +28,7 @@ export default function Home() {
           <div className="flex items-center justify-between w-full">
             {/* Logo */}
             <div className="text-white text-2xl font-bold px-6 py-3 min-w-fit">
-              NOCAP.AI
+              <Image src="/images/logo-dark.webp" alt="NOCAP.AI Logo" width={120} height={32} />
             </div>
             
             {/* Menu Items - Desktop */}
@@ -229,8 +230,8 @@ export default function Home() {
               <div>
                 <h4 className="text-xl font-bold text-white mb-6">Legal & Help</h4>
                 <ul className="space-y-3">
-                  <li><a href="#" className="text-gray-400 hover:text-cyan-400 transition">Privacy Policy</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-cyan-400 transition">Terms & Condition</a></li>
+                  <li><a href="/privacy-policy" className="text-gray-400 hover:text-cyan-400 transition">Privacy Policy</a></li>
+                  <li><a href="/terms&condition" className="text-gray-400 hover:text-cyan-400 transition">Terms & Condition</a></li>
                 </ul>
               </div>
             </div>

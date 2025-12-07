@@ -7,6 +7,7 @@ import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { useGoogleSignIn } from "@/hooks/useGoogleSignIn"
 import { useSignIn } from "@/hooks/useSignIn"
+import Image from "next/image"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -56,7 +57,11 @@ export default function LoginPage() {
       <main className="relative z-20 w-full max-w-md mx-6">
         <div className="bg-gradient-to-br from-[#1a2332] to-[#0f1419] rounded-3xl p-12 border border-cyan-400/30 shadow-2xl shadow-cyan-400/20">
           {/* Title */}
-          <h1 className="text-4xl font-bold text-white text-center mb-12"><a href="/">NOCAP.AI</a></h1>
+          <div className="flex justify-center mb-12">
+            <a href="/">
+              <Image src="/images/logo-dark.webp" alt="NOCAP.AI Logo" width={180} height={48} />
+            </a>
+          </div>
 
           <form className="flex flex-col gap-6" onSubmit={handleSignIn}>
             {/* Email Input */}
