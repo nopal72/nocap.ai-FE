@@ -1,4 +1,4 @@
-export default ParticleCanvas
+"use client"
 
 import { useEffect, useRef } from "react"
 
@@ -151,3 +151,5 @@ function ParticleCanvas() {
     />
   )
 }
+
+export default ParticleCanvas

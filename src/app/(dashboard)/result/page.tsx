@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Cookies from "js-cookie"
 import ParticleCanvas from "@/components/ui/particlecanvas"
@@ -21,6 +21,23 @@ interface AnalysisResult {
 }
 
 export default function ResultPage() {
+  return (
+    // Suspense boundary diperlukan karena ResultContent menggunakan useSearchParams()
+    <Suspense fallback={<LoadingScreen />}>
+      <ResultContent />
+    </Suspense>
+  )
+}
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen w-full bg-[#06060A] flex items-center justify-center">
+      <Loader className="animate-spin text-cyan-400" size={32} />
+    </div>
+  )
+}
+
+function ResultContent() {
   const [copiedCaption, setCopiedCaption] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [isFromHistory, setIsFromHistory] = useState(false)
