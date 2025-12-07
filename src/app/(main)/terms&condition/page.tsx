@@ -8,7 +8,7 @@ import React from 'react';
 const TermsAndConditions: React.FC = () => {
   const websiteName = 'NOCAP.AI';
   // Anda bisa mengganti ini dengan URL domain Anda yang sebenarnya
-  const websiteUrl = 'https://nocap.ai.vercel.app'; 
+  const websiteUrl = 'https://nocap-ai.vercel.app'; 
 
   return (
     <div className="min-h-screen bg-[#06060A] text-gray-300 font-sans">

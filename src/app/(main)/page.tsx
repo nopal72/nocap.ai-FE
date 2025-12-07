@@ -206,7 +206,7 @@ export default function Home() {
               {/* Brand Section */}
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">NOCAP.AI</h3>
-                <p className="text-gray-400 mb-4">better caption, no cap</p>
+                <p className="text-gray-400 mb-4">see beyond the likes</p>
                 <div className="border-b-2 border-cyan-400 w-12 mb-6"></div>
                 <a href="#" className="text-white hover:text-cyan-400 transition inline-block">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">

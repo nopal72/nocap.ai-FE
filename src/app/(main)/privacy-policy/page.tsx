@@ -8,7 +8,7 @@ import React from 'react';
  */
 const PrivacyPolicy: React.FC = () => {
   const websiteName = 'NOCAP.AI';
-  const websiteUrl = 'https://nocap.ai.vercel.app'; // Ganti dengan URL domain Anda
+  const websiteUrl = 'https://nocap-ai.vercel.app'; // Ganti dengan URL domain Anda
 
   return (
     <div className="min-h-screen bg-[#06060A] text-gray-300 font-sans">
