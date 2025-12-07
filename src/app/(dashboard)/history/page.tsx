@@ -69,14 +69,17 @@ export default function HistoryPage() {
     return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
   }
 
-  const generateScoreFromUrl = (url: string): number => {
-    // Generate a deterministic score based on the URL for consistent display
-    let hash = 0
-    // for (let i = 0; i < url.length; i++) {
-    //   const char = url.charCodeAt(i)
-    //   hash = ((hash << 5) - hash) + char
-    // }
-    return 40 + (Math.abs(hash) % 60) // Score between 40 and 100
+  const getScoreColorClass = (score: number): string => {
+    if (score >= 80) {
+      return "text-cyan-400"; // Full class name
+    }
+    if (score >= 60) {
+      return "text-orange-400"; // Full class name
+    }
+    if (score >= 40) {
+      return "text-yellow-400"; // Full class name
+    }
+    return "text-red-400"; // Full class name
   }
 
   if (isLoading) {
@@ -158,7 +161,7 @@ export default function HistoryPage() {
             {/* History Grid */}
             {displayItems.length > 0 && (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                   {displayItems.map((item) => {
                     const score = item.engagement?.estimatedScore * 100
                     return (
@@ -172,7 +175,7 @@ export default function HistoryPage() {
                         <div
                           className={`relative rounded-xl overflow-hidden ${
                             item.highlighted
-                              ? "border-4 border-cyan-400 shadow-lg shadow-cyan-400/50"
+                              ? "border-2 border-cyan-400 shadow-lg shadow-cyan-400/50"
                               : "border-2 border-gray-700 hover:border-cyan-400"
                           } transition-all h-60 ${item.highlighted ? "lg:h-96" : ""}`}
                         >
@@ -197,19 +200,11 @@ export default function HistoryPage() {
                                   strokeWidth="2"
                                   strokeDasharray={`${45 * 2 * Math.PI * (score / 100)} ${45 * 2 * Math.PI}`}
                                   strokeLinecap="round"
-                                  className={`text-${
-                                    score >= 80
-                                      ? "cyan-400"
-                                      : score >= 60
-                                      ? "orange-400"
-                                      : score >= 40
-                                      ? "yellow-400"
-                                      : "red-400"
-                                  }`}
+                                  className={getScoreColorClass(score)}
                                 />
                               </svg>
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">{score}%</span>
+                                <span className="text-white font-bold text-lg">{Math.round(score)}%</span>
                               </div>
                             </div>
                           </div>

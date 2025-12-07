@@ -11,7 +11,7 @@ import { useHistoryDetail, type DetailedHistoryItem } from "@/hooks/useHistoryDe
 
 // Define the structure for the analysis result
 interface AnalysisResult {
-  accessUrl: string | null
+  imageUrl?: string
   curation: { isAppropriate: boolean; labels: string[]; risk: string; notes?: string }
   caption: { text: string; alternatives: string[] }
   songs: { title: string; artist: string; reason: string }[]
@@ -59,11 +59,13 @@ export default function ResultPage() {
     }
   }, [historyId, fetchDetail, router])
 
+  console.log('History Detail:', historyDetail)
+
   // Convert history detail to result format
   useEffect(() => {
     if (historyDetail && isFromHistory) {
       const converted: AnalysisResult = {
-        accessUrl: historyDetail.accessUrl,
+        imageUrl: historyDetail.imageUrl,
         curation: {
           isAppropriate: historyDetail.curation.isAppropriate,
           labels: historyDetail.curation.labels,
@@ -158,9 +160,9 @@ export default function ResultPage() {
               <div className="flex flex-col gap-6">
                 {/* Image Preview */}
                 <div className="border-2 border-cyan-400 rounded-2xl overflow-hidden shadow-lg shadow-cyan-400/30 bg-black">
-                  {result.accessUrl ? (
+                  {result.imageUrl ? (
                     <img
-                      src={result.accessUrl}
+                      src={result.imageUrl}
                       alt="Analyzed content"
                       className="w-full h-auto max-h-[24rem] object-contain"
                     />
