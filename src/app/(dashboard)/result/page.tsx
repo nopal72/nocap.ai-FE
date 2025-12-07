@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Copy, Shield, Music, Tag, Loader } from "lucide-react"
 import Link from "next/link"
+import TopNavbar from "@/components/ui/topnavbar"
 import { useHistoryDetail, type DetailedHistoryItem } from "@/hooks/useHistoryDetail"
-import Cookies from 'js-cookie'
 
 // Define the structure for the analysis result
 interface AnalysisResult {
@@ -122,22 +122,7 @@ export default function ResultPage() {
 
       {/* content */}
       <main className="relative z-20">
-        {/* navbar */}
-        <nav className="w-full bg-[#06060A] py-4 px-8 border-b border-gray-800">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <div className="text-white text-2xl font-bold">NoCap.AI</div>
-            </Link>
-            {isFromHistory && (
-              <button
-                onClick={() => router.back()}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm"
-              >
-                ← Back to History
-              </button>
-            )}
-          </div>
-        </nav>
+        <TopNavbar showBackButton={isFromHistory} backButtonLabel="← Back to History" />
 
         {/* main content */}
         <div className="px-8 py-12">

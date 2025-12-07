@@ -4,11 +4,11 @@ import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Cookies from 'js-cookie'
 import ParticleCanvas from "@/components/ui/particlecanvas"
-import { Search, Menu, X, User, Loader } from "lucide-react"
-import Link from "next/link"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { Search, Loader } from "lucide-react"
+import TopNavbar from "@/components/ui/topnavbar"
 import { useHistory, type HistoryItem } from "@/hooks/use-history"
 import { setMockAuthToken } from "@/lib/test-helpers"
+import Link from "next/link"
 
 interface DisplayHistoryItem extends HistoryItem {
   highlighted?: boolean
@@ -16,8 +16,6 @@ interface DisplayHistoryItem extends HistoryItem {
 
 export default function HistoryPage() {
   const router = useRouter()
-  const isMobile = useIsMobile()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("Newest")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -85,60 +83,7 @@ export default function HistoryPage() {
 
       {/* content */}
       <main className="relative z-20">
-        {/* navbar */}
-        <nav className="w-full bg-[#06060A] py-4 px-8 border-b border-gray-800">
-          <div className="flex items-center justify-between w-full">
-            {/* Logo - Left */}
-            <Link href="/">
-              <div className="text-white text-2xl font-bold px-6 py-3 min-w-fit cursor-pointer hover:text-cyan-400 transition">
-                NOCAP.AI
-              </div>
-            </Link>
-
-            {/* Menu Items - Center (Desktop) */}
-            {!isMobile && (
-              <div className="flex items-center gap-12 flex-1 justify-center">
-                <Link href="/analyze" className="text-gray-400 hover:text-cyan-400 transition">
-                  NEW ANALYZE
-                </Link>
-                <a href="/history" className="text-gray-400 hover:text-cyan-400 transition">
-                  HISTORY
-                </a>
-              </div>
-            )}
-
-            {/* Mobile Menu & Profile - Right */}
-            <div className="flex items-center gap-4 ml-auto">
-              {isMobile && (
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="text-white hover:text-cyan-400 transition"
-                >
-                  {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-              )}
-
-              {/* Profile & Credits */}
-              <div className="flex items-center text-white">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-white hover:border-cyan-400 transition cursor-pointer">
-                  <User size={20} className="text-white" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Menu Dropdown */}
-          {isMobile && isMenuOpen && (
-            <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-gray-700">
-              <Link href="/dashboard" className="text-white hover:text-cyan-400 transition">
-                NEW ANALYZE
-              </Link>
-              <a href="/history" className="text-cyan-400 hover:text-cyan-400 transition">
-                HISTORY
-              </a>
-            </div>
-          )}
-        </nav>
+        <TopNavbar />
 
         {/* main content */}
         <div className="px-8 py-12">
