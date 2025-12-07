@@ -1,6 +1,6 @@
 # NOCAP.AI - See Beyond the Likes
 
-!NOCAP.AI Logo
+![Alt text](/image/logo-dark.webp "Logo NOCAP.AI")
 
 NOCAP.AI adalah sebuah platform berbasis web yang memanfaatkan kecerdasan buatan (AI) untuk menganalisis konten media sosial. Aplikasi ini membantu pengguna mendapatkan wawasan mendalam dari foto dan caption, memprediksi engagement, dan memberikan rekomendasi untuk meningkatkan performa konten.
 
