@@ -207,7 +207,7 @@ function ResultContent() {
                   <div>
                     <p className="text-gray-400 text-sm">OVERALL SCORE:</p>
                     <p className="text-green-400 font-bold text-lg capitalize">
-                      Risk {result.curation.risk}
+                      {result.curation.isAppropriate ? 'Approve' : 'Not Approve'}
                     </p>
                   </div>
                 </div>
