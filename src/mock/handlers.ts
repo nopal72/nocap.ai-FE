@@ -192,4 +192,100 @@ export const handlers = [
 
     return HttpResponse.json(response);
   }),
+
+  /**
+   * Handler for fetching detailed generation history.
+   * Fetch a specific history entry with all analysis results.
+   */
+  http.get(`${API_BASE_URL}/generate/history/:id`, ({ params, request }) => {
+    console.log("Mocked get-generation-history-detail endpoint called");
+
+    // 1. Check for authentication
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { message: "Unauthorized", code: "AUTH_REQUIRED" },
+        { status: 401 }
+      );
+    }
+
+    // 2. Get history ID from params
+    const { id } = params;
+
+    // 3. Validate history ID format
+    if (!id || typeof id !== 'string' || !id.startsWith('hist_')) {
+      return HttpResponse.json(
+        { message: "Invalid history ID", code: "INVALID_ID" },
+        { status: 400 }
+      );
+    }
+
+    // 4. Generate detailed data for this history entry
+    // Parse the ID to get the item number (hist_001 → 1)
+    const itemNumber = parseInt(id.replace('hist_', ''), 10);
+    if (isNaN(itemNumber) || itemNumber < 1 || itemNumber > 50) {
+      return HttpResponse.json(
+        { message: "History entry not found", code: "NOT_FOUND" },
+        { status: 404 }
+      );
+    }
+
+    // 5. Generate base date for this item (same as in history list)
+    const baseDate = new Date('2025-12-03T10:00:00Z');
+    const itemDate = new Date(baseDate.getTime() - (itemNumber - 1) * 60 * 60 * 1000);
+
+    // 6. Build detailed response based on the analysis type
+    const detailedItem = {
+      id: id,
+      fileKey: `users/123/posts/foto-unik-${itemNumber}.jpg`,
+      accessUrl: `https://my-bucket.s3.aws.com/users/123/posts/foto-unik-${itemNumber}.jpg`,
+      tasks: ["curation", "caption", "songs", "topics", "engagement"],
+      curation: {
+        isAppropriate: true,
+        labels: ["outdoor", "landscape", "nature"],
+        risk: "low",
+        notes: "No sensitive content detected."
+      },
+      caption: {
+        text: `Sunset hues over the quiet coastline - Image ${itemNumber}.`,
+        alternatives: [
+          `Golden hour by the sea - Image ${itemNumber}.`,
+          `A calm evening embracing the shore - Image ${itemNumber}.`
+        ]
+      },
+      songs: [
+        {
+          title: "Ocean Eyes",
+          artist: "Billie Eilish",
+          reason: "Calm coastal vibe"
+        },
+        {
+          title: "Sunset Lover",
+          artist: "Petit Biscuit",
+          reason: "Warm sunset mood"
+        }
+      ],
+      topics: [
+        { topic: "Travel", confidence: 0.94 },
+        { topic: "Photography", confidence: 0.89 },
+        { topic: "Nature", confidence: 0.87 }
+      ],
+      engagement: {
+        estimatedScore: 0.75 + (itemNumber % 20) * 0.01, // Vary score based on item number
+        drivers: ["color palette", "subject clarity", "composition"],
+        suggestions: ["Add a human subject", "Include location tag", "Use relevant hashtags"]
+      },
+      meta: {
+        language: "en",
+        generatedAt: itemDate.toISOString()
+      }
+    };
+
+    // 7. Build and return the response
+    const response = {
+      item: detailedItem
+    };
+
+    return HttpResponse.json(response);
+  }),
 ];

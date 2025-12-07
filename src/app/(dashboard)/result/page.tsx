@@ -1,35 +1,72 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import ParticleCanvas from "@/components/ui/particlecanvas"
-import { Copy, Shield, Music, Tag } from "lucide-react"
+import { Copy, Shield, Music, Tag, Loader } from "lucide-react"
 import Link from "next/link"
+import { useHistoryDetail, type DetailedHistoryItem } from "@/hooks/useHistoryDetail"
+import Cookies from 'js-cookie'
 
 // Define the structure for the analysis result
 interface AnalysisResult {
-  accessUrl: string | null // Changed from previewUrl
-  curation: { isAppropriate: boolean; labels: string[]; risk: string }
+  accessUrl: string | null
+  curation: { isAppropriate: boolean; labels: string[]; risk: string; notes?: string }
   caption: { text: string; alternatives: string[] }
   songs: { title: string; artist: string; reason: string }[]
   topics: { topic: string; confidence: number }[]
   engagement: { estimatedScore: number; drivers: string[]; suggestions: string[] }
+  meta?: { language: string; generatedAt: string }
 }
 
 export default function ResultPage() {
   const [copiedCaption, setCopiedCaption] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
+  const [isFromHistory, setIsFromHistory] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const historyId = searchParams.get('historyId')
+  const { item: historyDetail, status: historyStatus, fetchDetail } = useHistoryDetail()
 
+  // Effect to handle data loading
   useEffect(() => {
-    const storedResult = sessionStorage.getItem("analysisResult")
-    if (storedResult) {
-      setResult(JSON.parse(storedResult))
+    if (historyId) {
+      // Load from history
+      setIsFromHistory(true)
+      fetchDetail(historyId)
     } else {
-      // If no data, redirect back to the analyze page
-      router.replace("/analyze")
+      // Load from sessionStorage (from analyze flow)
+      const storedResult = sessionStorage.getItem("analysisResult")
+      if (storedResult) {
+        setResult(JSON.parse(storedResult))
+        setIsFromHistory(false)
+      } else {
+        // If no data, redirect back to the analyze page
+        router.replace("/analyze")
+      }
     }
-  }, [router])
+  }, [historyId, fetchDetail, router])
+
+  // Convert history detail to result format
+  useEffect(() => {
+    if (historyDetail && isFromHistory) {
+      const converted: AnalysisResult = {
+        accessUrl: historyDetail.accessUrl,
+        curation: {
+          isAppropriate: historyDetail.curation.isAppropriate,
+          labels: historyDetail.curation.labels,
+          risk: historyDetail.curation.risk,
+          notes: historyDetail.curation.notes
+        },
+        caption: historyDetail.caption,
+        songs: historyDetail.songs,
+        topics: historyDetail.topics,
+        engagement: historyDetail.engagement,
+        meta: historyDetail.meta
+      }
+      setResult(converted)
+    }
+  }, [historyDetail, isFromHistory])
 
   const handleCopyCaption = () => {
     if (result?.caption.text) {
@@ -37,6 +74,35 @@ export default function ResultPage() {
       setCopiedCaption(true)
       setTimeout(() => setCopiedCaption(false), 2000)
     }
+  }
+
+  // Loading state for history
+  if (isFromHistory && historyStatus === 'loading') {
+    return (
+      <div className="min-h-screen w-full bg-[#06060A] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader className="animate-spin text-cyan-400" size={32} />
+          <p className="text-cyan-400">Loading history details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state for history
+  if (isFromHistory && historyStatus === 'error') {
+    return (
+      <div className="min-h-screen w-full bg-[#06060A] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">Failed to load history details</p>
+          <button
+            onClick={() => router.back()}
+            className="px-4 py-2 bg-cyan-400 text-black font-semibold rounded-lg hover:bg-cyan-300"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
   }
 
   if (!result) {
@@ -58,9 +124,19 @@ export default function ResultPage() {
       <main className="relative z-20">
         {/* navbar */}
         <nav className="w-full bg-[#06060A] py-4 px-8 border-b border-gray-800">
-          <Link href="/">
-            <div className="text-white text-2xl font-bold">NoCap.AI</div>
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/">
+              <div className="text-white text-2xl font-bold">NoCap.AI</div>
+            </Link>
+            {isFromHistory && (
+              <button
+                onClick={() => router.back()}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm"
+              >
+                ← Back to History
+              </button>
+            )}
+          </div>
         </nav>
 
         {/* main content */}

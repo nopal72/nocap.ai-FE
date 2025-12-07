@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Cookies from 'js-cookie'
 import ParticleCanvas from "@/components/ui/particlecanvas"
 import { Search, Menu, X, User, Loader } from "lucide-react"
@@ -14,6 +15,7 @@ interface DisplayHistoryItem extends HistoryItem {
 }
 
 export default function HistoryPage() {
+  const router = useRouter()
   const isMobile = useIsMobile()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -223,6 +225,7 @@ export default function HistoryPage() {
                     return (
                       <div
                         key={item.id}
+                        onClick={() => router.push(`/result?historyId=${item.id}`)}
                         className={`group cursor-pointer transition-all ${
                           item.highlighted ? "lg:col-span-1 lg:row-span-2" : ""
                         }`}
