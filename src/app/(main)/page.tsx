@@ -178,10 +178,15 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Placeholder Image */}
+              {/* Screenshot Image */}
               <div className="flex items-center justify-center">
-                <div className="bg-gray-600 w-full h-96 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-400 text-xl">SS HALAMAN FITUR APLIKASI</p>
+                <div className="relative w-full h-96 rounded-lg overflow-hidden">
+                  <Image
+                    src="/images/screenshoot.png"
+                    alt="Screenshot of the application feature"
+                    layout="fill"
+                    objectFit="contain"
+                  />
                 </div>
               </div>
             </div>
