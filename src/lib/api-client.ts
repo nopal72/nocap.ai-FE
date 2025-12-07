@@ -17,9 +17,6 @@ const getSessionToken = (): string | null => {
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Interceptor untuk menambahkan token Authorization ke setiap permintaan secara otomatis

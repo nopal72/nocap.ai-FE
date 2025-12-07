@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "src/app/pages/landings/page.js"  ],
+, "src/app/pages/landings/page.js", "src/hooks/useImageAnalysis"  ],
   "exclude": ["node_modules"]
 }

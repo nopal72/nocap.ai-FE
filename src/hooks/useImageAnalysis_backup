@@ -4,8 +4,6 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { apiClient } from '@/lib/api-client';
-import { authClient } from '@/lib/auth';
 
 // Define the structure for the analysis result based on your mock handler
 interface AnalysisResult {
@@ -48,11 +46,6 @@ export const useImageAnalysis = () => {
     setAnalysisResult(null);
 
     const token = Cookies.get('auth_token');
-    // console.log('get session', authClient.getSession());
-    // const {data} = await authClient.getSession();
-
-    // const token = data?.session.token;
-    console.log('token saat upload image', token);
     if (!token) {
       setError('Authentication token not found. Please sign in again.');
       setLoadingState('error');
@@ -60,29 +53,25 @@ export const useImageAnalysis = () => {
     }
 
     try {
-
-      console.log('file name', file.name);  
-      console.log('file type', file.type);
-      console.log('token yang dikirim:', token);
-
-      console.log("SENDING HEADER:", {
-        Authorization: `Bearer ${token}`
-      });
-
-      const config = {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
-      }
-
       // 2. Get the pre-signed URL from our backend
-      const presignResponse = await apiClient.post('/image/get-presign-url',
-        {
+      const presignResponse = await fetch(`${API_BASE_URL}/image/get-presign-url`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
           fileName: file.name,
           contentType: file.type,
-        },
-        config
-      );
+        }),
+      });
 
-      const { uploadUrl, fileKey, accessUrl } = presignResponse.data;
+      if (!presignResponse.ok) {
+        const errorData = await presignResponse.json();
+        throw new Error(errorData.message || 'Failed to get upload URL.');
+      }
+
+      const { uploadUrl, fileKey, accessUrl } = await presignResponse.json();
 
       // 3. Upload the file directly to the storage URL (e.g., S3)
       setLoadingState('uploading');
@@ -120,14 +109,7 @@ export const useImageAnalysis = () => {
       router.push('/result');
 
     } catch (e: any) {
-      // Menangani error dari Axios dengan lebih baik
-      if (axios.isAxiosError(e) && e.response) {
-        // e.response.data mungkin berisi pesan error dari backend
-        const errorMessage = e.response.data?.message || e.response.statusText || 'An error occurred during the request.';
-        setError(`Error: ${e.response.status} - ${errorMessage}`);
-      } else {
       setError(e.message || 'An unexpected error occurred.');
-      }
       setLoadingState('error');
     }
   }, [router]);
