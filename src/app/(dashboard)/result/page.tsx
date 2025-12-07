@@ -39,6 +39,7 @@ function LoadingScreen() {
 
 function ResultContent() {
   const [copiedCaption, setCopiedCaption] = useState(false)
+  const [captionView, setCaptionView] = useState<"main" | "remixes">("main")
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [isFromHistory, setIsFromHistory] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -111,9 +112,9 @@ function ResultContent() {
     )
   }
 
-  const handleCopyCaption = () => {
-    if (result?.caption.text) {
-      navigator.clipboard.writeText(result.caption.text)
+  const handleCopyCaption = (textToCopy: string) => {
+    if (textToCopy) {
+      navigator.clipboard.writeText(textToCopy)
       setCopiedCaption(true)
       setTimeout(() => setCopiedCaption(false), 2000)
     }
@@ -295,29 +296,62 @@ function ResultContent() {
                       CAPTION ARCHITECT
                     </h3>
                     <div className="flex gap-2">
-                      <button className="text-cyan-400 font-semibold text-xs border border-cyan-400 px-3 py-1 rounded">
+                      <button
+                        onClick={() => setCaptionView("main")}
+                        className={`font-semibold text-xs border px-3 py-1 rounded transition-colors ${
+                          captionView === "main"
+                            ? "text-cyan-400 border-cyan-400"
+                            : "text-gray-400 border-gray-600 hover:bg-gray-700"
+                        }`}
+                      >
                         MAIN PICK
                       </button>
-                      <button className="text-gray-400 font-semibold text-xs border border-gray-600 px-3 py-1 rounded">
-                        REMIXES
+                      <button
+                        onClick={() => setCaptionView("remixes")}
+                        className={`font-semibold text-xs border px-3 py-1 rounded transition-colors ${
+                          captionView === "remixes"
+                            ? "text-cyan-400 border-cyan-400"
+                            : "text-gray-400 border-gray-600 hover:bg-gray-700"
+                        }`}
+                      >
+                        ALTERNATIVE
                       </button>
                     </div>
                   </div>
 
-                  <p className="text-gray-300 text-base mb-6 leading-relaxed">
-                    {result.caption.text}
-                  </p>
-
-                  <button
-                    onClick={handleCopyCaption}
-                    className={`w-full font-bold py-2 rounded-lg transition ${
-                      copiedCaption
-                        ? "bg-green-400 text-green-900"
-                        : "bg-cyan-400 text-slate-900 hover:bg-cyan-300"
-                    }`}
-                  >
-                    {copiedCaption ? "✓ COPIED" : "COPY TEXT"}
-                  </button>
+                  {captionView === "main" ? (
+                    <>
+                      <p className="text-gray-300 text-base mb-6 leading-relaxed">
+                        {result.caption.text}
+                      </p>
+                      <button
+                        onClick={() => handleCopyCaption(result.caption.text)}
+                        className={`w-full font-bold py-2 rounded-lg transition ${
+                          copiedCaption
+                            ? "bg-green-400 text-green-900"
+                            : "bg-cyan-400 text-slate-900 hover:bg-cyan-300"
+                        }`}
+                      >
+                        {copiedCaption ? "✓ COPIED" : "COPY TEXT"}
+                      </button>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      {result.caption.alternatives.map((alt, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-800/50 p-4 rounded-lg flex justify-between items-start gap-4"
+                        >
+                          <p className="text-gray-300 text-sm leading-relaxed flex-1">
+                            {alt}
+                          </p>
+                          <button onClick={() => handleCopyCaption(alt)} title="Copy alternative caption">
+                            <Copy className="text-gray-400 hover:text-cyan-400 w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Sonic Vibe */}
