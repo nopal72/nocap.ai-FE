@@ -11,6 +11,7 @@ export interface DetailedHistoryItem {
   fileKey: string;
   accessUrl: string;
   tasks: string[];
+  imageUrl: string; 
   curation: {
     isAppropriate: boolean;
     labels: string[];
