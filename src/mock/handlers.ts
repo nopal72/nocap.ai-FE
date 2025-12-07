@@ -137,4 +137,59 @@ export const handlers = [
     await new Promise(resolve => setTimeout(resolve, 1000)); 
     return new HttpResponse(null, { status: 200 });
   }),
+
+  /**
+   * Handler for fetching generation history with cursor-based pagination.
+   * Simulates retrieving a list of previously generated image analyses.
+   */
+  http.get(`${API_BASE_URL}/generate/history`, ({ request }) => {
+    console.log("Mocked get-generation-history endpoint called");
+
+    // 1. Check for authentication
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { message: "Unauthorized", code: "AUTH_REQUIRED" },
+        { status: 401 }
+      );
+    }
+
+    // 2. Parse query parameters
+    const url = new URL(request.url);
+    const limit = parseInt(url.searchParams.get('limit') || '20', 10);
+    const cursor = url.searchParams.get('cursor');
+
+    // 3. Generate mock data
+    const allItems = Array.from({ length: 50 }, (_, i) => ({
+      id: `hist_${String(i + 1).padStart(3, "0")}`,
+      fileKey: `users/123/posts/foto-unik-${i + 1}.jpg`,
+      accessUrl: `https://my-bucket.s3.aws.com/users/123/posts/foto-unik-${i + 1}.jpg`,
+      createdAt: new Date(new Date('2025-12-03T10:00:00Z').getTime() - i * 60 * 60 * 1000).toISOString(),
+    }));
+
+    // 4. Simulate pagination logic
+    let startIndex = 0;
+    if (cursor) {
+      const cursorIndex = allItems.findIndex(item => item.id === cursor);
+      if (cursorIndex !== -1) {
+        startIndex = cursorIndex + 1;
+      }
+    }
+
+    const paginatedItems = allItems.slice(startIndex, startIndex + limit);
+    const hasNextPage = startIndex + limit < allItems.length;
+    const nextCursor = hasNextPage ? paginatedItems[paginatedItems.length - 1]?.id : null;
+
+    // 5. Build and return the response
+    const response = {
+      items: paginatedItems,
+      pageInfo: {
+        limit: limit,
+        nextCursor: nextCursor,
+        hasNextPage: hasNextPage,
+      },
+    };
+
+    return HttpResponse.json(response);
+  }),
 ];

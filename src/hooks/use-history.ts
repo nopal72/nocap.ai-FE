@@ -1,0 +1,90 @@
+import { useState, useCallback } from 'react';
+import { apiClient } from '@/lib/api-client';
+
+/**
+ * Type definitions based on the API contract for generation history.
+ */
+export interface HistoryItem {
+  id: string;
+  fileKey: string;
+  accessUrl: string;
+  createdAt: string;
+}
+
+interface PageInfo {
+  limit: number;
+  nextCursor: string | null;
+  hasNextPage: boolean;
+}
+
+interface HistoryResponse {
+  items: HistoryItem[];
+  pageInfo: PageInfo;
+}
+
+type FetchStatus = 'idle' | 'loading' | 'success' | 'error';
+
+interface UseHistoryProps {
+  limit?: number;
+}
+
+/**
+ * Custom hook to fetch and manage generation history with cursor-based pagination.
+ *
+ * @param {UseHistoryProps} options - Configuration options for the hook, like page limit.
+ * @returns An object containing the history items, fetch status, and pagination controls.
+ */
+export const useHistory = ({ limit = 20 }: UseHistoryProps = {}) => {
+  const [items, setItems] = useState<HistoryItem[]>([]);
+  const [pageInfo, setPageInfo] = useState<PageInfo>({
+    limit,
+    nextCursor: null,
+    hasNextPage: true,
+  });
+  const [status, setStatus] = useState<FetchStatus>('idle');
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchHistory = useCallback(async (cursor?: string | null) => {
+    // Prevent fetching if there are no more pages
+    if (cursor === null && status !== 'idle') return;
+
+    setStatus('loading');
+    setError(null);
+
+    try {
+      const params = new URLSearchParams({
+        limit: String(limit),
+      });
+      if (cursor) {
+        params.set('cursor', cursor);
+      }
+
+      const response = await apiClient.get<HistoryResponse>(`/generate/history?${params.toString()}`);
+      const { items: newItems, pageInfo: newPageInfo } = response.data;
+
+      setItems(prev => (cursor ? [...prev, ...newItems] : newItems));
+      setPageInfo(newPageInfo);
+      setStatus('success');
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Failed to fetch history.';
+      setError(errorMessage);
+      setStatus('error');
+      console.error('[useHistory] Error fetching history:', err);
+    }
+  }, [limit, status]);
+
+  const fetchNextPage = useCallback(() => {
+    if (pageInfo.hasNextPage && status !== 'loading') {
+      fetchHistory(pageInfo.nextCursor);
+    }
+  }, [fetchHistory, pageInfo.hasNextPage, pageInfo.nextCursor, status]);
+
+  // Initial fetch is handled by fetchNextPage as well
+  const loadFirstPage = useCallback(() => {
+    if (status === 'idle') {
+      fetchHistory();
+    }
+  }, [status, fetchHistory]);
+
+  return { items, status, error, pageInfo, fetchNextPage, loadFirstPage };
+};
