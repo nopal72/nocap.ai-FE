@@ -72,10 +72,10 @@ export default function HistoryPage() {
   const generateScoreFromUrl = (url: string): number => {
     // Generate a deterministic score based on the URL for consistent display
     let hash = 0
-    for (let i = 0; i < url.length; i++) {
-      const char = url.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
-    }
+    // for (let i = 0; i < url.length; i++) {
+    //   const char = url.charCodeAt(i)
+    //   hash = ((hash << 5) - hash) + char
+    // }
     return 40 + (Math.abs(hash) % 60) // Score between 40 and 100
   }
 
@@ -160,7 +160,7 @@ export default function HistoryPage() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                   {displayItems.map((item) => {
-                    const score = generateScoreFromUrl(item.accessUrl)
+                    const score = item.engagement?.estimatedScore * 100
                     return (
                       <div
                         key={item.id}
@@ -178,7 +178,7 @@ export default function HistoryPage() {
                         >
                           {/* Image */}
                           <img
-                            src={item.accessUrl}
+                            src={item.imageUrl}
                             alt={item.fileKey}
                             className="w-full h-full object-cover"
                           />

@@ -4,8 +4,8 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import imageCompression from 'browser-image-compression';
 import { apiClient } from '@/lib/api-client';
-import { authClient } from '@/lib/auth';
 
 // Define the structure for the analysis result based on your mock handler
 interface AnalysisResult {
@@ -20,8 +20,6 @@ interface AnalysisResult {
 
 // Define the possible states of the image processing flow
 type LoadingState = 'idle' | 'presigning' | 'uploading' | 'analyzing' | 'success' | 'error';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 /**
  * Custom hook to handle the entire image upload and analysis workflow.
@@ -47,13 +45,8 @@ export const useImageAnalysis = () => {
     setUploadProgress(0);
     setAnalysisResult(null);
 
-    const token = Cookies.get('auth_token');
-    // console.log('get session', authClient.getSession());
-    // const {data} = await authClient.getSession();
-
-    // const token = data?.session.token;
-    console.log('token saat upload image', token);
-    if (!token) {
+    // apiClient's interceptor handles the token. We just check if it exists.
+    if (!Cookies.get('auth_token')) {
       setError('Authentication token not found. Please sign in again.');
       setLoadingState('error');
       return;
@@ -61,33 +54,44 @@ export const useImageAnalysis = () => {
 
     try {
 
-      console.log('file name', file.name);  
-      console.log('file type', file.type);
-      console.log('token yang dikirim:', token);
+      const MAX_SIZE_MB = 2;
+      let processedFile = file;
 
-      console.log("SENDING HEADER:", {
-        Authorization: `Bearer ${token}`
-      });
+      // --- LOGIKA KOMPRESI GAMBAR ---
+      // Cek jika ukuran file melebihi batas maksimal (2MB)
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        console.log(`Original file size: ${(file.size / 1024 / 1024).toFixed(2)}MB. Compressing...`);
+        
+        // Opsi untuk kompresi
+        const options = {
+          maxSizeMB: MAX_SIZE_MB,
+          maxWidthOrHeight: 1920, // Opsional: Mengubah ukuran gambar agar tidak terlalu besar
+          useWebWorker: true,      // Opsional: Menggunakan web worker agar UI tidak freeze
+          onProgress: (p: number) => {
+            // Anda bisa membuat state baru untuk progress kompresi jika mau
+            console.log(`Compression Progress: ${p}%`);
+          },
+        };
 
-      const config = {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+        processedFile = await imageCompression(file, options);
+        console.log(`Compressed file size: ${(processedFile.size / 1024 / 1024).toFixed(2)}MB`);
       }
 
       // 2. Get the pre-signed URL from our backend
+      // apiClient akan otomatis menambahkan token. Tidak perlu config manual.
       const presignResponse = await apiClient.post('/image/get-presign-url',
         {
-          fileName: file.name,
-          contentType: file.type,
-        },
-        config
+          fileName: processedFile.name,
+          contentType: processedFile.type,
+        }
       );
 
       const { uploadUrl, fileKey, accessUrl } = presignResponse.data;
 
       // 3. Upload the file directly to the storage URL (e.g., S3)
       setLoadingState('uploading');
-      await axios.put(uploadUrl, file, {
-        headers: { 'Content-Type': file.type },
+      await axios.put(uploadUrl, processedFile, {
+        headers: { 'Content-Type': processedFile.type },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || file.size));
           setUploadProgress(percentCompleted);
@@ -96,24 +100,22 @@ export const useImageAnalysis = () => {
 
       // 4. Trigger the analysis process with the fileKey
       setLoadingState('analyzing');
-      const analysisResponse = await fetch(`${API_BASE_URL}/generate/from-image`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ fileKey }),
+      // Menggunakan apiClient yang sudah memiliki token, dan menambahkan timeout.
+      const analysisResponse = await apiClient.post(`/generate/from-image`, {
+        fileKey,
+        tasks: ["curation", "caption", "songs", "topics", "engagement"],
+        language: "id",
+        limits:{maxSongs:5,maxTopics:8}
+      }, {
+        // Timeout 120 detik (120000 ms). 6000000 (100 menit) terlalu lama.
+        timeout: 120000,
       });
 
-      if (!analysisResponse.ok) {
-        const errorData = await analysisResponse.json();
-        throw new Error(errorData.message || 'Failed to analyze image.');
-      }
-
-      const result: AnalysisResult = await analysisResponse.json();
+      // Jika request berhasil, data ada di `analysisResponse.data`.
+      const result: AnalysisResult = analysisResponse.data;
       setAnalysisResult(result);
       
-      // Store the result in session storage to pass it to the next page
+      // INI BAGIAN PENTING: Menyimpan hasil analisis DAN accessUrl ke session storage
       sessionStorage.setItem('analysisResult', JSON.stringify({ ...result, accessUrl }));
 
       setLoadingState('success');

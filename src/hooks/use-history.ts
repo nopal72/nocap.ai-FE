@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { apiClient } from '@/lib/api-client';
+import Cookies from 'js-cookie';
 
 /**
  * Type definitions based on the API contract for generation history.
@@ -7,7 +8,8 @@ import { apiClient } from '@/lib/api-client';
 export interface HistoryItem {
   id: string;
   fileKey: string;
-  accessUrl: string;
+  imageUrl: string;
+  engagement: {estimatedScore: number;};
   createdAt: string;
 }
 
@@ -53,6 +55,8 @@ export const useHistory = ({ limit = 20 }: UseHistoryProps = {}) => {
     setStatus('loading');
     setError(null);
 
+    const token = Cookies.get('auth_token');
+
     try {
       const params = new URLSearchParams({
         limit: String(limit),
@@ -61,8 +65,14 @@ export const useHistory = ({ limit = 20 }: UseHistoryProps = {}) => {
         params.set('cursor', cursor);
       }
 
-      const response = await apiClient.get<HistoryResponse>(`/generate/history?${params.toString()}`);
+      const response = await apiClient.get<HistoryResponse>(`/generate/history`,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const { items: newItems, pageInfo: newPageInfo } = response.data;
+
+      console.log('Fetched history items:', newItems);
 
       setItems(prev => (cursor ? [...prev, ...newItems] : newItems));
       setPageInfo(newPageInfo);
