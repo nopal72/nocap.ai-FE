@@ -91,7 +91,7 @@ export default function Home() {
 
         <div className="relative z-10">
           {/* Hero Section */}
-          <section id="home" className="w-full min-h-[100vh] md:min-h-[110vh] py-32 px-8 text-center relative flex items-center justify-center" style={{backgroundImage: "url('/images/hero-bg.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
+          <section id="home" className="w-full min-h-[100vh] md:min-h-[110vh] py-32 px-8 text-center relative flex items-center justify-center" style={{backgroundImage: "url('/images/hero-bg.webp')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
             {/* particles canvas (below overlay and content) */}
             <ParticleCanvas />
 
@@ -180,7 +180,7 @@ export default function Home() {
               <div className="flex items-center justify-center">
                 <div className="relative w-full h-96 rounded-lg overflow-hidden">
                   <Image
-                    src="/images/screenshoot.png"
+                    src="/images/screenshoot.webp"
                     alt="Screenshot of the application feature"
                     layout="fill"
                     objectFit="contain"
