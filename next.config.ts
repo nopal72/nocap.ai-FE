@@ -4,7 +4,7 @@ const nextConfig: import("next").NextConfig = {
     return [
       {
         source: "/api/auth/:path*",
-        destination: "https://apinocapai.vercel.app/auth/:path*", // Proxy to Backend
+        destination: "https://apinocapai.vercel.app/api/auth/:path*", // Proxy to Backend
         // destination: "http://localhost:3000/auth/:path*",
       },
     ];
