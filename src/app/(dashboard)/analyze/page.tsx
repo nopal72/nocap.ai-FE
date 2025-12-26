@@ -1,54 +1,54 @@
-"use client"
+"use client";
 
-import React, { useRef, useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Cookies from "js-cookie"
-import ParticleCanvas from "@/components/ui/particlecanvas"
-import { Upload } from "lucide-react"
-import TopNavbar from "@/components/ui/topnavbar"
-import { useImageAnalysis } from "@/hooks/useImageAnalysis"
+import React, { useRef, useState, useEffect } from "react";
+import ParticleCanvas from "@/components/ui/particlecanvas";
+import { Upload } from "lucide-react";
+import TopNavbar from "@/components/ui/topnavbar";
+import { useImageAnalysis } from "@/hooks/useImageAnalysis";
+import { useAuth } from "@/hooks/useAuth";
 
+// eslint-disable-next-line @next/next/no-async-client-component
 export default function AnalyzePage() {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const { isLoading } = useAuth();
 
-  const router = useRouter()
   const {
     generateAnalysis,
     loadingState,
     uploadProgress,
     analysisResult,
     error,
-  } = useImageAnalysis()
+  } = useImageAnalysis();
 
   // Check authentication on mount
-  useEffect(() => {
-    const token = Cookies.get('auth_token')
-    if (!token) {
-      router.replace('/login')
-    } else {
-      setIsLoading(false)
-    }
-  }, [router])
+  // useEffect(() => {
+  //   // const session = Cookies.get('auth_token')
+  //   const session = authClient.getSession();
+  //   if (session) {
+  //     setIsLoading(false);
+  //   } else {
+  //     router.replace("/login");
+  //   }
+  // }, [router]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      handleFile(file)
+      handleFile(file);
     }
-  }
+  };
 
   const handleFile = (file: File) => {
-    setSelectedFile(file)
+    setSelectedFile(file);
     // Create a preview URL
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (event) => {
-      setPreview(event.target?.result as string)
-    }
-    reader.readAsDataURL(file)
-  }
+      setPreview(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   if (isLoading) {
     return (
@@ -61,40 +61,40 @@ export default function AnalyzePage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   const handleSelectFileClick = () => {
-    fileInputRef.current?.click()
-  }
+    fileInputRef.current?.click();
+  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.currentTarget.classList.add("border-cyan-400")
-  }
+    e.preventDefault();
+    e.currentTarget.classList.add("border-cyan-400");
+  };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.currentTarget.classList.remove("border-cyan-400")
-  }
+    e.preventDefault();
+    e.currentTarget.classList.remove("border-cyan-400");
+  };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.currentTarget.classList.remove("border-cyan-400")
-    const file = e.dataTransfer.files?.[0]
+    e.preventDefault();
+    e.currentTarget.classList.remove("border-cyan-400");
+    const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      handleFile(file)
+      handleFile(file);
     }
-  }
+  };
 
   const handleAnalyzeClick = () => {
     if (selectedFile) {
       generateAnalysis(selectedFile, preview).then((result) => {
         // After analysis is successful, you might want to redirect
         // For now, we'll rely on the hook's state to show results
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden">
@@ -112,8 +112,8 @@ export default function AnalyzePage() {
               content analyze
             </h1>
             <p className="text-gray-400 text-base md:text-lg mb-12">
-              upload konten anda dengan meneken tombol di bawah ini dan AI kami akan
-              menganalisisnya
+              upload konten anda dengan meneken tombol di bawah ini dan AI kami
+              akan menganalisisnya
             </p>
 
             {/* file upload area */}
@@ -139,7 +139,9 @@ export default function AnalyzePage() {
                 <div className="flex flex-col items-center gap-4">
                   <Upload size={48} className="text-cyan-400" />
                   <p className="text-gray-300 text-lg">Drag file anda kesini</p>
-                  <p className="text-gray-500 text-sm">atau klik tombol di bawah</p>
+                  <p className="text-gray-500 text-sm">
+                    atau klik tombol di bawah
+                  </p>
                 </div>
               )}
               <input
@@ -168,7 +170,9 @@ export default function AnalyzePage() {
 
               {loadingState === "uploading" && (
                 <div className="w-full max-w-sm">
-                  <p className="text-white mb-2">Uploading: {uploadProgress}%</p>
+                  <p className="text-white mb-2">
+                    Uploading: {uploadProgress}%
+                  </p>
                   <div className="w-full bg-gray-700 rounded-full h-2.5">
                     <div
                       className="bg-cyan-400 h-2.5 rounded-full transition-all duration-300"
@@ -183,7 +187,9 @@ export default function AnalyzePage() {
               )}
 
               {loadingState === "success" && (
-                <p className="text-green-400">Analysis complete! Redirecting...</p>
+                <p className="text-green-400">
+                  Analysis complete! Redirecting...
+                </p>
               )}
 
               {error && <p className="text-red-500">Error: {error}</p>}
@@ -192,5 +198,5 @@ export default function AnalyzePage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
