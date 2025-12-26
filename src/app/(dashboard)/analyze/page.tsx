@@ -7,7 +7,6 @@ import TopNavbar from "@/components/ui/topnavbar";
 import { useImageAnalysis } from "@/hooks/useImageAnalysis";
 import { useAuth } from "@/hooks/useAuth";
 
-// eslint-disable-next-line @next/next/no-async-client-component
 export default function AnalyzePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

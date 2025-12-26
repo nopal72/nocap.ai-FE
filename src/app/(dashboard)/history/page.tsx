@@ -6,12 +6,14 @@ import { Search, Loader } from "lucide-react";
 import TopNavbar from "@/components/ui/topnavbar";
 import { useHistory, type HistoryItem } from "@/hooks/use-history";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 interface DisplayHistoryItem extends HistoryItem {
   highlighted?: boolean;
 }
 
 export default function HistoryPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("Newest");
   const { items, status, error, pageInfo, fetchNextPage, loadFirstPage } =
