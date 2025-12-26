@@ -1,23 +1,36 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import Cookies from "js-cookie"
-import ParticleCanvas from "@/components/ui/particlecanvas"
-import { Copy, Shield, Music, Tag, Loader } from "lucide-react"
-import Link from "next/link"
-import TopNavbar from "@/components/ui/topnavbar"
-import { useHistoryDetail, type DetailedHistoryItem } from "@/hooks/useHistoryDetail"
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
+import ParticleCanvas from "@/components/ui/particlecanvas";
+import { Copy, Shield, Music, Tag, Loader } from "lucide-react";
+import Link from "next/link";
+import TopNavbar from "@/components/ui/topnavbar";
+import {
+  useHistoryDetail,
+  type DetailedHistoryItem,
+} from "@/hooks/useHistoryDetail";
+import { useAuth } from "@/hooks/useAuth";
 
 // Define the structure for the analysis result
 interface AnalysisResult {
-  imageUrl?: string
-  curation: { isAppropriate: boolean; labels: string[]; risk: string; notes?: string }
-  caption: { text: string; alternatives: string[] }
-  songs: { title: string; artist: string; reason: string }[]
-  topics: { topic: string; confidence: number }[]
-  engagement: { estimatedScore: number; drivers: string[]; suggestions: string[] }
-  meta?: { language: string; generatedAt: string }
+  imageUrl?: string;
+  curation: {
+    isAppropriate: boolean;
+    labels: string[];
+    risk: string;
+    notes?: string;
+  };
+  caption: { text: string; alternatives: string[] };
+  songs: { title: string; artist: string; reason: string }[];
+  topics: { topic: string; confidence: number }[];
+  engagement: {
+    estimatedScore: number;
+    drivers: string[];
+    suggestions: string[];
+  };
+  meta?: { language: string; generatedAt: string };
 }
 
 export default function ResultPage() {
@@ -26,7 +39,7 @@ export default function ResultPage() {
     <Suspense fallback={<LoadingScreen />}>
       <ResultContent />
     </Suspense>
-  )
+  );
 }
 
 function LoadingScreen() {
@@ -34,48 +47,44 @@ function LoadingScreen() {
     <div className="min-h-screen w-full bg-[#06060A] flex items-center justify-center">
       <Loader className="animate-spin text-cyan-400" size={32} />
     </div>
-  )
+  );
 }
 
 function ResultContent() {
-  const [copiedCaption, setCopiedCaption] = useState(false)
-  const [captionView, setCaptionView] = useState<"main" | "remixes">("main")
-  const [result, setResult] = useState<AnalysisResult | null>(null)
-  const [isFromHistory, setIsFromHistory] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const historyId = searchParams.get('historyId')
-  const { item: historyDetail, status: historyStatus, fetchDetail } = useHistoryDetail()
+  const [copiedCaption, setCopiedCaption] = useState(false);
+  const [captionView, setCaptionView] = useState<"main" | "remixes">("main");
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [isFromHistory, setIsFromHistory] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const historyId = searchParams.get("historyId");
+  const {
+    item: historyDetail,
+    status: historyStatus,
+    fetchDetail,
+  } = useHistoryDetail();
+  const { isLoading } = useAuth();
 
   // Check authentication on mount
-  useEffect(() => {
-    const token = Cookies.get('auth_token')
-    if (!token) {
-      router.replace('/login')
-    } else {
-      setIsLoading(false)
-    }
-  }, [router])
 
   // Effect to handle data loading
   useEffect(() => {
     if (historyId) {
       // Load from history
-      setIsFromHistory(true)
-      fetchDetail(historyId)
+      setIsFromHistory(true);
+      fetchDetail(historyId);
     } else {
       // Load from sessionStorage (from analyze flow)
-      const storedResult = sessionStorage.getItem("analysisResult")
+      const storedResult = sessionStorage.getItem("analysisResult");
       if (storedResult) {
-        setResult(JSON.parse(storedResult))
-        setIsFromHistory(false)
+        setResult(JSON.parse(storedResult));
+        setIsFromHistory(false);
       } else {
         // If no data, redirect back to the analyze page
-        router.replace("/analyze")
+        router.replace("/analyze");
       }
     }
-  }, [historyId, fetchDetail, router])
+  }, [historyId, fetchDetail, router]);
 
   // Convert history detail to result format
   useEffect(() => {
@@ -86,17 +95,17 @@ function ResultContent() {
           isAppropriate: historyDetail.curation.isAppropriate,
           labels: historyDetail.curation.labels,
           risk: historyDetail.curation.risk,
-          notes: historyDetail.curation.notes
+          notes: historyDetail.curation.notes,
         },
         caption: historyDetail.caption,
         songs: historyDetail.songs,
         topics: historyDetail.topics,
         engagement: historyDetail.engagement,
-        meta: historyDetail.meta
-      }
-      setResult(converted)
+        meta: historyDetail.meta,
+      };
+      setResult(converted);
     }
-  }, [historyDetail, isFromHistory])
+  }, [historyDetail, isFromHistory]);
 
   if (isLoading) {
     return (
@@ -109,19 +118,19 @@ function ResultContent() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   const handleCopyCaption = (textToCopy: string) => {
     if (textToCopy) {
-      navigator.clipboard.writeText(textToCopy)
-      setCopiedCaption(true)
-      setTimeout(() => setCopiedCaption(false), 2000)
+      navigator.clipboard.writeText(textToCopy);
+      setCopiedCaption(true);
+      setTimeout(() => setCopiedCaption(false), 2000);
     }
-  }
+  };
 
   // Loading state for history
-  if (isFromHistory && historyStatus === 'loading') {
+  if (isFromHistory && historyStatus === "loading") {
     return (
       <div className="min-h-screen w-full bg-[#06060A] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -129,11 +138,11 @@ function ResultContent() {
           <p className="text-cyan-400">Loading history details...</p>
         </div>
       </div>
-    )
+    );
   }
 
   // Error state for history
-  if (isFromHistory && historyStatus === 'error') {
+  if (isFromHistory && historyStatus === "error") {
     return (
       <div className="min-h-screen w-full bg-[#06060A] flex items-center justify-center">
         <div className="text-center">
@@ -146,7 +155,7 @@ function ResultContent() {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   if (!result) {
@@ -154,10 +163,10 @@ function ResultContent() {
       <div className="min-h-screen w-full bg-[#06060A] flex items-center justify-center">
         <p className="text-cyan-400">Loading results...</p>
       </div>
-    )
+    );
   }
 
-  const viralPotential = Math.round(result.engagement.estimatedScore * 100)
+  const viralPotential = Math.round(result.engagement.estimatedScore * 100);
 
   return (
     <div className="min-h-screen w-full bg-[#06060A] relative overflow-hidden">
@@ -166,7 +175,10 @@ function ResultContent() {
 
       {/* content */}
       <main className="relative z-20">
-        <TopNavbar showBackButton={isFromHistory} backButtonLabel="← Back to History" />
+        <TopNavbar
+          showBackButton={isFromHistory}
+          backButtonLabel="← Back to History"
+        />
 
         {/* main content */}
         <div className="px-8 py-12">
@@ -207,7 +219,9 @@ function ResultContent() {
                   <div>
                     <p className="text-gray-400 text-sm">OVERALL SCORE:</p>
                     <p className="text-green-400 font-bold text-lg capitalize">
-                      {result.curation.isAppropriate ? 'Approve' : 'Not Approve'}
+                      {result.curation.isAppropriate
+                        ? "Approve"
+                        : "Not Approve"}
                     </p>
                   </div>
                 </div>
@@ -245,7 +259,9 @@ function ResultContent() {
                           fill="none"
                           stroke="#00D9FF"
                           strokeWidth="3"
-                          strokeDasharray={`${45 * 2 * Math.PI * (viralPotential / 100)} ${45 * 2 * Math.PI}`}
+                          strokeDasharray={`${
+                            45 * 2 * Math.PI * (viralPotential / 100)
+                          } ${45 * 2 * Math.PI}`}
                           strokeLinecap="round"
                           filter="drop-shadow(0 0 8px #00D9FF)"
                         />
@@ -345,7 +361,10 @@ function ResultContent() {
                           <p className="text-gray-300 text-sm leading-relaxed flex-1">
                             {alt}
                           </p>
-                          <button onClick={() => handleCopyCaption(alt)} title="Copy alternative caption">
+                          <button
+                            onClick={() => handleCopyCaption(alt)}
+                            title="Copy alternative caption"
+                          >
                             <Copy className="text-gray-400 hover:text-cyan-400 w-4 h-4" />
                           </button>
                         </div>
@@ -365,8 +384,8 @@ function ResultContent() {
                         <Music size={16} className="text-cyan-400" />
                         <div className="flex-1">
                           <p className="text-gray-300 text-sm">
-                            <span className="font-semibold">{song.title}</span> -{" "}
-                            {song.artist} ({song.reason})
+                            <span className="font-semibold">{song.title}</span>{" "}
+                            - {song.artist} ({song.reason})
                           </p>
                         </div>
                       </div>
@@ -404,5 +423,5 @@ function ResultContent() {
         </div>
       </main>
     </div>
-  )
+  );
 }

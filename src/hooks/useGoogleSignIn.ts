@@ -1,8 +1,7 @@
 "use client";
 
-import { authClient } from '@/lib/auth';
-import apiInstance from '@/lib/fetchClient';
-import { useState } from 'react';
+import { authClient } from "@/lib/auth";
+import { useState } from "react";
 
 /**
  * Custom hook for handling Google Sign-In logic.
@@ -21,24 +20,23 @@ export const useGoogleSignIn = () => {
     setLoading(true);
     setError(null);
 
-      // const data = await apiInstance.post<{url: string}>('/auth/sign-in/social',{
-      //   provider: 'google',
-      //   callbackURL: `${window.location.origin}/auth/callback/google`
-      // });
+    // const data = await apiInstance.post<{url: string}>('/auth/sign-in/social',{
+    //   provider: 'google',
+    //   callbackURL: `${window.location.origin}/auth/callback/google`
+    // });
 
-      const { error } = await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: `${window.location.origin}/analyze`
-      })
+    const { error } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: `${window.location.origin}/analyze`,
+    });
 
-      if (error && error.message) {
-        setError(error.message);
-        console.error('An error occurred during sign-in:', error);
-        // Only stop loading on error, as success navigates away from the page.
-        setLoading(false);
-        return
-      }
-
+    if (error && error.message) {
+      setError(error.message);
+      console.error("An error occurred during sign-in:", error);
+      // Only stop loading on error, as success navigates away from the page.
+      setLoading(false);
+      return;
+    }
   };
 
   return { signIn, loading, error };
